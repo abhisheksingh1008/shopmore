@@ -1,0 +1,14 @@
+.title {
+  margin: 0.75rem;
+}
+
+.wrapper {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.products-list {
+  width: 100%;
+  padding: 0.75rem;
+  /* border: 1px solid black; */
+}

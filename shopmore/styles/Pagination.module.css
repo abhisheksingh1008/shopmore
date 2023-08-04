@@ -1,0 +1,27 @@
+.pages-list {
+  width: 100%;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.page-no {
+  padding: 0.6rem 0.9rem;
+  margin-inline: 0.1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  background-color: white;
+}
+
+.page-no:hover {
+  background-color: rgb(231, 229, 229);
+}
+
+.active {
+  background-color: rgb(231, 229, 229);
+}
+
+.hidden {
+  display: none;
+}

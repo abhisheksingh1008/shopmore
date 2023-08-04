@@ -1,0 +1,22 @@
+.button {
+  margin: 0.3rem 0;
+  padding: 0.6rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  background-color: #078159;
+  border: 1px solid #037851;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background-color: #05583b;
+  font-weight: 700;
+}
+
+.visible {
+  display: inline-block;
+}

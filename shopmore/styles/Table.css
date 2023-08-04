@@ -1,0 +1,17 @@
+table {
+  width: 100%;
+  border: 1px solid black;
+}
+
+th {
+  border-bottom: 1px solid black;
+  padding-block: 0.5rem;
+}
+
+td {
+  text-align: center;
+}
+
+span {
+  margin: 1.4rem;
+}

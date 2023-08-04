@@ -1,0 +1,96 @@
+.filters {
+  padding: 0.75rem 0;
+  padding-left: 0.75rem;
+  /* border: 1px solid black; */
+  min-width: 13rem;
+  max-width: 13rem;
+  height: fit-content;
+  background-color: #f7f6f6;
+  border-radius: 8px;
+}
+
+.filter {
+  margin-block: 1rem;
+}
+
+.filter-title {
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-block: 0.25rem;
+}
+
+.filter button[type="button"] {
+  outline: none;
+  border: none;
+  background-color: #faf9f9;
+  cursor: pointer;
+  padding: 0.2rem 0.2rem;
+  padding-inline-end: 0.3rem;
+  border-radius: 4px;
+}
+
+.filter button[type="submit"],
+.filter button[type="none"] {
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0.3rem 0.75rem;
+  margin-right: 0.2rem;
+  margin-top: 0.3rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: white;
+  background-color: black;
+  transition: all 0.3s ease-in-out;
+}
+
+.filter button:hover {
+  background-color: #e9e5e5;
+  color: black;
+}
+
+.active {
+  background-color: #e9e5e5;
+}
+
+.sort {
+  padding: 0.15rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  outline: none;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.price-range-input {
+  width: 45%;
+  margin-right: 0.25rem;
+  padding: 0.35rem 0.25rem;
+  border: 1px solid black;
+  border-radius: 2px;
+}
+
+.brand {
+  margin: 0.1rem 0;
+  cursor: pointer;
+}
+
+.brand input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.brand label {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.star-icon {
+  margin-inline: 1px;
+  color: orange;
+  font-size: 0.85rem;
+  font-weight: 800;
+}

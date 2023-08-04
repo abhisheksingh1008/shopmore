@@ -1,0 +1,32 @@
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.none {
+  padding: 0.5rem 0.85rem;
+  margin: 0;
+  border: 1px solid black;
+  outline: none;
+  border-radius: 3px;
+  background-color: white;
+  font-size: var(--fs-normal);
+}
+
+.button {
+  padding: 0.5rem 0.85rem;
+  margin: 0;
+  border: 1px solid black;
+  outline: none;
+  border-radius: 3px;
+  color: white;
+  font-size: var(--fs-normal);
+  cursor: pointer;
+  background-color: #118a62;
+  border: 1px solid #037851;
+}
+
+.button:hover {
+  background-color: #037851;
+  font-weight: 700;
+}

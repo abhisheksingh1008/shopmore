@@ -1,0 +1,54 @@
+.discount-banner {
+  background-color: #ffe6cc;
+  padding: 1rem 2rem;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.banner-title {
+  font-size: var(--fs-largest);
+  font-weight: 800;
+  color: #003d29;
+  margin: 0.5rem 0;
+}
+
+.banner-description {
+  font-size: var(--fs-normal);
+}
+
+.disc-banner-image-container {
+  width: 50%;
+  text-align: center;
+}
+
+.discount-banner-image {
+  width: 50%;
+  height: auto;
+  object-fit: scale-down;
+}
+
+.banner-button {
+  padding: 1rem 2rem;
+  margin: 2rem 0;
+  font: inherit;
+  background-color: #003d29;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 480px) {
+  .banner-content {
+    flex-direction: column;
+  }
+
+  .disc-banner-image-container {
+    width: 100%;
+  }
+}

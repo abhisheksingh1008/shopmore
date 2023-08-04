@@ -1,0 +1,43 @@
+@import url("https://www.w3schools.com/w3css/4/w3.css");
+
+:root {
+  --fs-smaller: clamp(0.69rem, calc(0.69rem + 0.04vw), 0.72rem);
+  --fs-samll: clamp(0.83rem, calc(0.81rem + 0.12vw), 0.9rem);
+  --fs-normal: clamp(1rem, calc(0.96rem + 0.22vw), 1.13rem);
+  --fs-big: clamp(1.2rem, calc(1.13rem + 0.36vw), 1.41rem);
+  --fs-bigger: clamp(1.44rem, calc(1.33rem + 0.55vw), 1.76rem);
+  --fs-large: clamp(1.73rem, calc(1.56rem + 0.82vw), 2.2rem);
+  --fs-larger: clamp(2.07rem, calc(1.84rem + 1.17vw), 2.75rem);
+  --fs-largest: clamp(2.49rem, calc(2.16rem + 1.64vw), 3.43rem);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+}
+
+main {
+  margin-top: 67px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 4px;
+  background-color: #aaa;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #231f1e;
+  border-radius: 12px;
+}

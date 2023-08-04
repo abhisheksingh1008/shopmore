@@ -1,0 +1,19 @@
+.loadingCircle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 5px solid transparent;
+  border-top-color: rgb(40, 36, 36);
+  border-bottom-color: rgb(40, 36, 36);
+  animation: loading 1.5s ease infinite;
+  margin: auto;
+}
+
+@keyframes loading {
+  form {
+    transform: rotate(0turn);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}

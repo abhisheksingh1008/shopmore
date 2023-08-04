@@ -1,0 +1,24 @@
+.button {
+  color: black;
+  padding: 0.35rem 0.75rem;
+  font: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: white;
+  border: 1px solid black;
+  font-size: medium;
+}
+
+.button:hover {
+  background-color: rgb(248, 244, 244);
+}
+
+.button-with-icon {
+  display: flex;
+  align-items: center;
+}
+
+.button-icon {
+  margin-right: 0.25rem;
+}

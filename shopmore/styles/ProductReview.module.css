@@ -1,0 +1,38 @@
+.review {
+  border-block: 0.2px solid #ccc;
+  padding: 1.5rem;
+}
+
+.review-title-section {
+  margin-bottom: 0.5rem;
+}
+
+.product-rating {
+  background-color: rgb(11, 137, 11);
+  padding: 0.15rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.star-icon {
+  font-size: 0.65rem;
+}
+
+.review-title {
+  margin-inline: 0.5rem;
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.reviewed-by {
+  margin-bottom: 0.5rem;
+  font-size: var(--fs-smaller);
+  font-weight: 600;
+  color: rgb(111, 111, 111);
+}
+
+.review-comment {
+  font-size: var(--fs-small);
+  /* font-weight: 400; */
+}
