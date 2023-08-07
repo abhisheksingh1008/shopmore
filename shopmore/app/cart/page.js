@@ -12,10 +12,6 @@ const Cart = () => {
   const authCtx = useContext(AuthContext);
   const router = useRouter();
 
-  // if (!authCtx?.user) {
-  //   router.replace("/");
-  // }
-
   const [cart, setCart] = useState(null);
   const [isLoading, setisLoading] = useState(false);
   const [error, setError] = useState("");
@@ -148,7 +144,9 @@ const Cart = () => {
       if (!data.success) {
         throw new Error(data.message);
       } else {
-        window.location.href = data.url;
+        if (typeof window !== "undefined") {
+          window.location.href = data.url;
+        }
       }
     } catch (error) {
       console.log(error);

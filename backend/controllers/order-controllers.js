@@ -204,40 +204,50 @@ const createCheckoutSession = async (req, res, next) => {
 };
 
 const stripeWebhook = async (req, res, next) => {
+  console.log("Running Stripe webhook");
   const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-  let event, eventType, data;
+  let event, data;
 
   try {
-    const signature = req.headers["stripe-signature"];
+    // const signature = req.headers["stripe-signature"];
 
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      signature,
-      process.env.STRIPE_WEBHOOK_ENDPOINT_SECRET
-    );
+    // event = stripe.webhooks.constructEvent(
+    //   req.body,
+    //   signature,
+    //   process.env.STRIPE_WEBHOOK_ENDPOINT_SECRET
+    // );
 
-    eventType = event.type;
-    data = event.data.object;
+    // data = event.data.object;
+
+    eventType = req.body.type;
+    data = req.body.data.object;
+
+    console.log(eventType, data);
+    
+    if (eventType === "checkout.session.completed") {
+      await stripe.customers
+        .retrieve(data.customer)
+        .then((customer) => {
+          console.log("Customer is : ", customer);
+          console.log("Data is : ", data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      console.log(`Unhandled event type ${event.type}`);
+      return;
+    }
   } catch (err) {
     res.status(400).send(`Webhook Error: ${err.message}`);
-    console.log(`Unhandled event type ${event.type}`);
     return;
   }
 
-  if (eventType === "checkout.session.completed") {
-    await stripe.customers
-      .retrieve(data.customer)
-      .then((customer) => {
-        console.log("Customer is : ", customer);
-        console.log("Data is : ", data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  res.json({});
+  res.status(200).json({
+    success: true,
+    done: "Hello",
+  });
 };
 
 const createOrder = async (req, res, next) => {

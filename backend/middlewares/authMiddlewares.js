@@ -3,6 +3,7 @@ import User from "../models/userModel.js";
 import HttpError from "../models/http-error.js";
 
 const requireSignIn = async (req, res, next) => {
+  // console.log("Checking authorization");
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")

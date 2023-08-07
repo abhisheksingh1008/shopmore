@@ -3,8 +3,21 @@
 import { useState, useEffect } from "react";
 import AuthContext from "./auth-context";
 
+let userInfo = null;
+
+if (typeof window !== "undefined") {
+  userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+  const tokenExpirationDate = userInfo.tokenExpirationDate;
+  const currentDate = new Date(Date.now()).toISOString();
+  if (currentDate > tokenExpirationDate) {
+    localStorage.removeItem("userInfo");
+    userInfo = null;
+  }
+}
+
 const AuthProvider = (props) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(userInfo);
 
   const login = (user) => {
     const { userId, name, email, token } = user;
@@ -61,25 +74,25 @@ const AuthProvider = (props) => {
     setUser(null);
   };
 
-  useEffect(() => {
-    let user = JSON.parse(localStorage.getItem("userInfo"));
+  // useEffect(() => {
+  //   let user = JSON.parse(localStorage.getItem("userInfo"));
 
-    // console.log(user);
+  //   // console.log(user);
 
-    if (!user) {
-      return;
-    }
+  //   if (!user) {
+  //     return;
+  //   }
 
-    const tokenExpirationDate = user.tokenExpirationDate;
-    const currentDate = new Date(Date.now()).toISOString();
-    if (currentDate > tokenExpirationDate) {
-      user = null;
-      localStorage.removeItem("userInfo");
-      return;
-    }
+  //   const tokenExpirationDate = user.tokenExpirationDate;
+  //   const currentDate = new Date(Date.now()).toISOString();
+  //   if (currentDate > tokenExpirationDate) {
+  //     user = null;
+  //     localStorage.removeItem("userInfo");
+  //     return;
+  //   }
 
-    setUser({ ...user });
-  }, []);
+  //   setUser({ ...user });
+  // }, []);
 
   return (
     <AuthContext.Provider value={{ user, login, signup, logout }}>

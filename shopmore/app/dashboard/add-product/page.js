@@ -27,11 +27,6 @@ const AddProductPage = () => {
   const authCtx = useContext(AuthContext);
   const router = useRouter();
 
-  if (!authCtx?.user) {
-    router.push("/");
-    return;
-  }
-
   const [formInputs, setFormInputs] = useState(initialState);
   const [categories, setCategories] = useState([]);
   const [isError, setIsError] = useState("");
@@ -47,6 +42,11 @@ const AddProductPage = () => {
   };
 
   const fetchCategories = async () => {
+    if (!authCtx?.user) {
+      router.push("/");
+      return;
+    }
+
     setIsError("");
     setIsLoading(true);
     try {

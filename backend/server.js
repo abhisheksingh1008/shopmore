@@ -27,5 +27,3 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Listening to http://localhost:${port}`);
 });
-
-//learn async vs defer in javascript
