@@ -1,4 +1,5 @@
 import User from "../models/userModel.js";
+import Product from "../models/productModel.js";
 import Order from "../models/orderModel.js";
 import HttpError from "../models/http-error.js";
 import Stripe from "stripe";
@@ -95,8 +96,6 @@ const createCheckoutSession = async (req, res, next) => {
     const orderItems = existingUser.cart.cartItems.map((item) => {
       return {
         product: item.product._id,
-        name: item.product.name,
-        image: item.product.image,
         quantity: item.quantity,
       };
     });
@@ -105,8 +104,8 @@ const createCheckoutSession = async (req, res, next) => {
 
     const customer = await stripe.customers.create({
       metadata: {
-        userId: req.user._id,
-        // orderItems: JSON.stringify(orderItems),
+        userId: String(req.user._id),
+        orderItems: JSON.stringify(orderItems),
       },
     });
 
@@ -204,44 +203,32 @@ const createCheckoutSession = async (req, res, next) => {
 };
 
 const stripeWebhook = async (req, res, next) => {
-  console.log("Running Stripe webhook");
   const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-  let event, data;
+  let eventType, data;
 
   try {
-    // const signature = req.headers["stripe-signature"];
-
-    // event = stripe.webhooks.constructEvent(
-    //   req.body,
-    //   signature,
-    //   process.env.STRIPE_WEBHOOK_ENDPOINT_SECRET
-    // );
-
-    // data = event.data.object;
-
     eventType = req.body.type;
     data = req.body.data.object;
 
-    console.log(eventType, data);
-    
     if (eventType === "checkout.session.completed") {
       await stripe.customers
         .retrieve(data.customer)
         .then((customer) => {
-          console.log("Customer is : ", customer);
-          console.log("Data is : ", data);
+          // console.log("Customer is : ", customer);
+          // console.log("Data is : ", data);
+          createOrder(customer, data);
         })
         .catch((error) => {
           console.log(error);
         });
     } else {
-      console.log(`Unhandled event type ${event.type}`);
+      // console.log(`Unhandled event type ${eventType}`);
       return;
     }
-  } catch (err) {
-    res.status(400).send(`Webhook Error: ${err.message}`);
-    return;
+  } catch (error) {
+    // res.status(400).send(`Webhook Error: ${err.message}`);
+    console.log(error);
   }
 
   res.status(200).json({
@@ -250,44 +237,63 @@ const stripeWebhook = async (req, res, next) => {
   });
 };
 
-const createOrder = async (req, res, next) => {
+const createOrder = async (customer, data) => {
   try {
-    const { orderItems, shippingAddress } = req.body;
+    const cartItems = JSON.parse(customer.metadata.orderItems);
 
-    const totalPrice = orderItems.reduce((acc, item) => {
-      return (acc += item.price * item.quantity);
-    }, 0);
+    let orderItems = [];
 
-    let shippingPrice = 0;
+    for (let cartItem in cartItems) {
+      const product = await Product.findById(cartItems[cartItem].product);
 
-    if (totalPrice < 500) {
-      shippingPrice = 40;
-      totalPrice += shippingPrice;
+      orderItems.push({
+        product: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        quantity: cartItems[cartItem].quantity,
+      });
+
+      product.countInStock -= cartItems[cartItem].quantity;
+      product.sold += cartItems[cartItem].quantity;
+
+      await product.save();
     }
 
-    const taxPrice = 0;
+    const totalPrice = data.amount_total / 100;
+
+    const shippingDetails = {
+      name: data.customer_details.name,
+      phone: data.customer_details.phone,
+      email: data.customer_details.email,
+      address_line1: data.customer_details.address.line1,
+      address_line2: data.customer_details.address.line2,
+      city: data.customer_details.address.city,
+      state: data.customer_details.address.state,
+      country: data.customer_details.address.country,
+      postalCode: data.customer_details.address.postal_code,
+    };
+
+    const paymentResult = {
+      payment_method: data.payment_method_types[0],
+      payment_intent_id: data.payment_intent_id,
+      payment_status: data.payment_status,
+      email_address: data.customer_details.email,
+    };
 
     const createdOrder = new Order({
-      user: req.user._id,
+      user: customer.metadata.userId,
+      customerId: data.customer,
       orderItems,
-      shippingAddress,
-      taxPrice,
-      shippingPrice,
       totalPrice,
+      shippingDetails,
+      isPaid: true,
+      paymentResult,
     });
 
-    await createOrder.save();
-
-    res.status(201).json({
-      success: true,
-      message: "Order placed successfully!",
-      order: createdOrder,
-    });
+    await createdOrder.save();
   } catch (error) {
     console.log(error);
-    return next(
-      new HttpError("Something went wrong, couldn't update product.", 500)
-    );
   }
 };
 

@@ -15,11 +15,11 @@ const router = express.Router();
 
 router.get("/", requireSignIn, admin, getOrders);
 router.post("/", requireSignIn, createOrder);
+router.post("/webhook", stripeWebhook);
 router.get("/create-checkout-session", requireSignIn, createCheckoutSession);
 router.get("/:orderId", requireSignIn, getOrderById);
 router.get("/myorders", requireSignIn, getMyOrders);
 router.patch("/:orderId/pay", requireSignIn, updateOrderToPaid);
 router.patch("/:orderId/deliver", requireSignIn, updateOrderToDelivered);
-router.post("/webhook", stripeWebhook);
 
 export default router;
