@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AuthContext from "./auth-context";
 
 let userInfo = null;
