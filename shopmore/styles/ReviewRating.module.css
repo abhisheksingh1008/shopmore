@@ -1,0 +1,11 @@
+.star {
+  color: #ccc;
+  font-size: 2rem;
+  margin-inline: 5px;
+  cursor: pointer;
+}
+
+.on {
+  color: orange;
+  fill: orange;
+}

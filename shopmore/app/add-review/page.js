@@ -1,22 +1,27 @@
 "use client";
 
 import { useState, useContext } from "react";
-import { useRouter } from "next/navigation";
 import AuthContext from "@/store/auth-context";
+import { useSearchParams, useRouter } from "next/navigation";
 import Card from "@/components/Card";
+import ReviewRating from "@/components/ReviewRating";
 import classes from "@/styles/Form.module.css";
 import buttonClasses from "@/styles/Button.module.css";
-import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import toast from "react-hot-toast";
 
 const initialState = {
-  name: "",
-  image: null,
+  title: "",
+  comment: "",
+  rating: 0,
   isSubmitting: false,
   errorMessage: null,
 };
 
-const AddCategoryPage = () => {
+const ratingText = ["Very Bad", "Bad", "Good", "Very Good", "Excellent"];
+
+const page = () => {
+  const productId = useSearchParams().get("pid");
   const authCtx = useContext(AuthContext);
   const router = useRouter();
 
@@ -31,35 +36,7 @@ const AddCategoryPage = () => {
     });
   };
 
-  const handleFileUpload = async (filetype, file) => {
-    if (!file) return;
-    if (!filetype) {
-      filetype = "auto";
-    }
-
-    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${filetype}/upload`;
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "ecommerce_product_images");
-
-    const response = await fetch(cloudinaryUrl, {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error("Failed to upload file.");
-    }
-
-    const { secure_url } = data;
-
-    return secure_url;
-  };
-
-  const addCategoryHandler = async (event) => {
+  const addReviewHandler = async (event) => {
     event.preventDefault();
     setFormData((prev) => {
       return {
@@ -69,10 +46,8 @@ const AddCategoryPage = () => {
     });
 
     try {
-      const image_url = await handleFileUpload("image", formData.image);
-
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URI}/products/categories`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URI}/products/${productId}/reviews`,
         {
           method: "POST",
           headers: {
@@ -80,8 +55,9 @@ const AddCategoryPage = () => {
             Authorization: `Bearer ${authCtx.user?.token}`,
           },
           body: JSON.stringify({
-            name: formData.name,
-            image: image_url,
+            rating: formData.rating,
+            title: formData.title,
+            comment: formData.comment,
           }),
         }
       );
@@ -93,7 +69,7 @@ const AddCategoryPage = () => {
       if (!data.success) {
         throw new Error(data.message);
       } else {
-        toast.success(`New Category added successfully!`);
+        toast.success(`Product Reviewed successfully!`);
       }
     } catch (error) {
       console.log(error);
@@ -113,37 +89,44 @@ const AddCategoryPage = () => {
   return (
     <div className={classes.login}>
       <Card className={classes["form-card"]}>
-        <h1 className={classes.heading}>Add Category</h1>
-        <form onSubmit={addCategoryHandler}>
+        <h1 className={classes.heading}>Add Review</h1>
+        <form onSubmit={addReviewHandler}>
           <div className={classes["form-controls"]}>
             <div className={classes["form-control"]}>
-              <label htmlFor="name">Category Name : </label>
+              <label htmlFor="title">Rate this Product :</label>
+              <ReviewRating
+                onRatingChange={(rating) => {
+                  setFormData((prev) => {
+                    return { ...prev, rating: rating };
+                  });
+                }}
+              />
+              {formData.rating >= 1 && (
+                <div style={{ textAlign: "center" }}>
+                  {ratingText[formData.rating - 1]}
+                </div>
+              )}
+            </div>
+            <div className={classes["form-control"]}>
+              <label htmlFor="title">Review Title : </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                id="title"
+                name="title"
+                value={formData.title}
                 onChange={inputChangeHandler}
                 required
               />
             </div>
             <div className={classes["form-control"]}>
-              <label htmlFor="image">Image : </label>
-              <input
-                type="file"
-                id="image"
-                name="image"
-                accept="image/*"
-                onChange={(event) => {
-                  setFormData((prev) => {
-                    return {
-                      ...prev,
-                      image: event.target.files[0],
-                    };
-                  });
-                }}
+              <label htmlFor="comment">Comment : </label>
+              <textarea
+                id="comment"
+                name="comment"
+                value={formData.comment}
+                onChange={inputChangeHandler}
                 required
-              />
+              ></textarea>
             </div>
           </div>
           <div className={classes["form-actions"]}>
@@ -165,4 +148,4 @@ const AddCategoryPage = () => {
   );
 };
 
-export default AddCategoryPage;
+export default page;

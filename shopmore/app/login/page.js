@@ -13,6 +13,13 @@ import Image from "next/image";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import toast from "react-hot-toast";
 
+const initialState = {
+  email: "",
+  password: "",
+  isSubmitting: false,
+  errorMessage: null,
+};
+
 const Login = () => {
   const authCtx = useContext(AuthContext);
   const router = useRouter();
@@ -20,13 +27,6 @@ const Login = () => {
   if (authCtx?.user) {
     router.back();
   }
-
-  const initialState = {
-    email: "",
-    password: "",
-    isSubmitting: false,
-    errorMessage: null,
-  };
 
   const [data, setData] = useState(initialState);
 

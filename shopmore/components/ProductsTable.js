@@ -9,10 +9,18 @@ import { TbEdit } from "react-icons/tb";
 import { MdDelete } from "react-icons/md";
 import paginationClasses from "@/styles/Pagination.module.css";
 import classes from "@/styles/AdminDashboard.module.css";
-import Card from "./Card";
 import toast from "react-hot-toast";
 
 const LIMIT = 15;
+const columns = [
+  "Name",
+  "Category",
+  "Price",
+  "In Stock",
+  "Discount",
+  "Edit",
+  "Delete",
+];
 
 const ProductsTable = () => {
   const authCtx = useContext(AuthContext);
@@ -29,16 +37,6 @@ const ProductsTable = () => {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
 
-  const columns = [
-    "Name",
-    "Category",
-    "Price",
-    "In Stock",
-    "Discount",
-    "Edit",
-    "Delete",
-  ];
-
   const fetchProducts = async () => {
     setProductsData((prev) => {
       return {
@@ -50,7 +48,12 @@ const ProductsTable = () => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URI}/products?page=${page}&limit=${LIMIT}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URI}/products?page=${page}&limit=${LIMIT}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authCtx.user?.token}`,
+          },
+        }
       );
 
       const data = await response.json();

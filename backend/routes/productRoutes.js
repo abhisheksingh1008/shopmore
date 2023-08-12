@@ -36,7 +36,7 @@ router.get("/brands/:brand", getProductsByBrand);
 router.get("/brands", getAllDistinctBrands);
 router.get("/categories/:category/brands", getDistinctBrandsByCategory);
 router.get("/:pid", getProductById);
-router.post("/", requireSignIn, admin, createManyProducts);
+router.post("/", requireSignIn, admin, createProduct);
 router.post(
   "/generateAssetSignature",
   requireSignIn,

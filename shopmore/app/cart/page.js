@@ -15,6 +15,7 @@ const Cart = () => {
   const [cart, setCart] = useState(null);
   const [isLoading, setisLoading] = useState(false);
   const [error, setError] = useState("");
+  const [creatingCheckoutSession, setCreatingCheckoutSession] = useState(false);
 
   const fetchUserCart = async () => {
     if (!authCtx?.user) {
@@ -37,7 +38,7 @@ const Cart = () => {
 
       const data = await response.json();
 
-      //   console.log(data);
+      console.log(data);
 
       if (!data.success) {
         throw new Error(data.message);
@@ -128,6 +129,7 @@ const Cart = () => {
       return;
     }
 
+    setCreatingCheckoutSession(true);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URI}/orders/create-checkout-session`,
@@ -152,11 +154,17 @@ const Cart = () => {
       console.log(error);
       toast.error(error.message);
     }
+    setCreatingCheckoutSession(false);
   };
 
   useEffect(() => {
     fetchUserCart();
   }, []);
+
+  const totalItemsInCart = cart?.cartItems.reduce((acc, item) => {
+    if (item.product !== null) return (acc += item.quantity);
+    else return acc;
+  }, 0);
 
   return (
     <div className={classes.wrapper}>
@@ -185,14 +193,18 @@ const Cart = () => {
                     <div className={classes.empty}>Cart is Empty!</div>
                   ) : (
                     cart?.cartItems?.map((item) => {
-                      return (
+                      return item.product !== null ? (
                         <CartItem
                           key={item.product._id}
-                          quantity={item.quantity}
                           product={item.product}
+                          quantity={item.quantity}
                           totalPrice={item.totalPrice}
                           onChangeItemCount={itemCountChangeHandler}
                         />
+                      ) : (
+                        <div className={classes.empty}>
+                          This product no longer exists.
+                        </div>
                       );
                     })
                   )}
@@ -206,7 +218,7 @@ const Cart = () => {
                 </div>
                 <div className={classes["details"]}>
                   <div className={classes["price-detail-row"]}>
-                    <span>Price({`2`} items)</span>
+                    <span>Price({totalItemsInCart} items)</span>
                     <span>&#x20B9;{cart.totalAmount.toFixed(0)}</span>
                   </div>
                   <div className={classes["price-detail-row"]}>
@@ -225,15 +237,18 @@ const Cart = () => {
                   <span>&#x20B9;{cart.totalAmount}</span>
                 </div>
               </div>
-              <button
-                onClick={() => {
-                  handleCheckout();
-                }}
-                className={classes.button}
-                style={{ width: "100%" }}
-              >
-                Check out
-              </button>
+              {totalItemsInCart > 0 && (
+                <button
+                  onClick={() => {
+                    handleCheckout();
+                  }}
+                  className={classes.button}
+                  style={{ width: "100%" }}
+                  disabled={creatingCheckoutSession}
+                >
+                  {creatingCheckoutSession ? <LoadingSpinner /> : "Check out"}
+                </button>
+              )}
             </div>
           </>
         )

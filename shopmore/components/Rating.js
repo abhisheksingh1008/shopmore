@@ -1,4 +1,4 @@
-import RatingStar from "./RatingStar";
+import Star from "./Star";
 
 const Rating = ({ rating }) => {
   let fill = 0;
@@ -15,7 +15,7 @@ const Rating = ({ rating }) => {
         } else if (rating === 0) {
           fill = 0;
         }
-        return <RatingStar key={index} fill={fill} />;
+        return <Star key={index} fill={fill} />;
       })}
     </span>
   );

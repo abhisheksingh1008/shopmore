@@ -49,13 +49,12 @@ const Navbar = () => {
       }
     } catch (error) {
       console.log(error);
+      setAdmin(false);
     }
   };
 
   useEffect(() => {
-    if (authCtx?.user !== null) {
-      protect();
-    }
+    protect();
   }, [authCtx.user]);
 
   return (
@@ -104,7 +103,7 @@ const Navbar = () => {
             Categories
           </Link>
           <Link
-            href={authCtx?.user ? "/myorders" : "/login"}
+            href={!authCtx.user ? "/login" : "/myorders"}
             className={
               path === "/myorders"
                 ? `${classes["navbar-link"]} ${classes.active}`
@@ -124,7 +123,7 @@ const Navbar = () => {
                   Products
                 </Link>
                 <Link
-                  href={"/dashboard/orders"}
+                  href={"/dashboard/orders?page=1&limit=12"}
                   className="w3-bar-item w3-button"
                 >
                   Orders
@@ -160,7 +159,7 @@ const Navbar = () => {
             <input type="text" placeholder="Search products" />
             <FiSearch className={classes["search-icon"]} />
           </div>
-          <Link href={!authCtx?.user ? "login" : "/cart"}>
+          <Link href={!authCtx?.user ? "/login" : "/cart"}>
             <button
               className={`${classes["navbar-option"]} ${btnClasses.button} ${btnClasses["button-with-icon"]}`}
             >

@@ -8,9 +8,13 @@ const getOrders = async (req, res, next) => {
   try {
     const { page, limit } = req.query;
 
+    if (!limit) {
+      limit = 12;
+    }
+
     const count = await Order.countDocuments();
     const orders = await Order.find({})
-      .skip(page * limit)
+      .skip(page * limit - limit)
       .limit(limit);
 
     if (!orders) {
@@ -35,9 +39,7 @@ const getOrderById = async (req, res, next) => {
   try {
     const orderId = req.params.orderId;
 
-    const order = await Order.findById(orderId)
-      .skip(page * limit)
-      .limit(limit);
+    const order = await Order.findById(orderId);
 
     if (!order) {
       return next(new HttpError("Orders not found.", 400));
@@ -209,9 +211,10 @@ const stripeWebhook = async (req, res, next) => {
 
   try {
     eventType = req.body.type;
-    data = req.body.data.object;
 
     if (eventType === "checkout.session.completed") {
+      data = req.body.data.object;
+
       await stripe.customers
         .retrieve(data.customer)
         .then((customer) => {
@@ -222,6 +225,10 @@ const stripeWebhook = async (req, res, next) => {
         .catch((error) => {
           console.log(error);
         });
+
+      res.status(200).json({
+        success: true,
+      });
     } else {
       // console.log(`Unhandled event type ${eventType}`);
       return;
@@ -230,11 +237,6 @@ const stripeWebhook = async (req, res, next) => {
     // res.status(400).send(`Webhook Error: ${err.message}`);
     console.log(error);
   }
-
-  res.status(200).json({
-    success: true,
-    done: "Hello",
-  });
 };
 
 const createOrder = async (customer, data) => {
@@ -299,7 +301,7 @@ const createOrder = async (customer, data) => {
 
 const updateOrderToPaid = async (req, res, next) => {
   try {
-    const orderId = req.params;
+    const orderId = req.params.orderId;
 
     const order = await Order.findById(orderId);
 
@@ -313,7 +315,7 @@ const updateOrderToPaid = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Order",
+      message: "Order updated successfully!",
       order,
     });
   } catch (error) {
@@ -326,20 +328,21 @@ const updateOrderToPaid = async (req, res, next) => {
 
 const updateOrderToDelivered = async (req, res, next) => {
   try {
-    const orderId = req.params;
+    const orderId = req.params.orderId;
 
     const order = await Order.findById(orderId);
 
     if (!order) {
-      return next(new HttpError("Orders not found.", 400));
+      return next(new HttpError("Order not found.", 400));
     }
 
     order.isDelivered = true;
 
     await order.save();
+
     res.status(200).json({
       success: true,
-      message: "Order",
+      message: "Order updated successfully!",
       order,
     });
   } catch (error) {

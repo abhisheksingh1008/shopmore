@@ -8,11 +8,14 @@ let userInfo = null;
 if (typeof window !== "undefined") {
   userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-  const tokenExpirationDate = userInfo.tokenExpirationDate;
-  const currentDate = new Date(Date.now()).toISOString();
-  if (currentDate > tokenExpirationDate) {
-    localStorage.removeItem("userInfo");
-    userInfo = null;
+  if (userInfo) {
+    const tokenExpirationDate = userInfo.tokenExpirationDate;
+    const currentDate = new Date(Date.now()).toISOString();
+    
+    if (currentDate > tokenExpirationDate) {
+      localStorage.removeItem("userInfo");
+      userInfo = null;
+    }
   }
 }
 

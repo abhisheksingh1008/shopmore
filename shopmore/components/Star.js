@@ -1,7 +1,7 @@
 import { BsStar, BsStarHalf, BsStarFill } from "react-icons/bs";
 import classes from "@/styles/Rating.module.css";
 
-const RatingStar = ({ fill }) => {
+const Star = ({ fill }) => {
   return (
     <span>
       {fill === 1 ? (
@@ -15,4 +15,4 @@ const RatingStar = ({ fill }) => {
   );
 };
 
-export default RatingStar;
+export default Star;
