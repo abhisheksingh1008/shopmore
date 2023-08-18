@@ -160,7 +160,7 @@ const AddProductPage = () => {
 
       // console.log(data);
 
-      toast.success("Product added successfully");
+      toast.success("New Product added.");
 
       setFormInputs(initialState);
 

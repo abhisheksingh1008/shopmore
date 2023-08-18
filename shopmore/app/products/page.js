@@ -6,9 +6,11 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import HomePageProductItem from "@/components/HomePageProductItem";
-import classes from "@/styles/Products.module.css";
+import classes from "@/styles/ProductsListingPage.module.css";
+import buttonClasses from "@/styles/Button.module.css";
 import paginationClasses from "@/styles/Pagination.module.css";
 import Filters from "@/components/Filters";
+import { RiFilter3Line } from "react-icons/ri";
 
 const AllProducts = () => {
   const page = Number(useSearchParams().get("page"));
@@ -21,6 +23,7 @@ const AllProducts = () => {
   const [isError, setIsError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
 
   const fetchProducts = async () => {
     setIsError("");
@@ -143,11 +146,7 @@ const AllProducts = () => {
   };
 
   const priceFilterHandler = (price) => {
-    if (price?.length > 0) {
-      setFilteredPrice([...price]);
-    } else {
-      setFilteredPrice([]);
-    }
+    setFilteredPrice(price);
   };
 
   useEffect(() => {
@@ -157,7 +156,7 @@ const AllProducts = () => {
     } else if (selectedBrands.length > 0 || filteredPrice.length > 0) {
       fetchProductsByFilters();
     }
-  }, [page, selectedBrands.length, filteredPrice.length]);
+  }, [page, selectedBrands.length, filteredPrice]);
 
   useEffect(() => {
     setProductsToShow(products);
@@ -168,17 +167,40 @@ const AllProducts = () => {
   }, []);
 
   return (
-    <>
-      <h2 className={classes.title}>All Products</h2>
+    <div>
+      <div className={classes.top}>
+        <h3 className={classes.title}>All Products</h3>
+        <button
+          className={`${classes["filters-button"]} ${buttonClasses.button}`}
+          onClick={() => {
+            setShowFilters((prev) => !prev);
+          }}
+        >
+          {!showFilters ? (
+            <RiFilter3Line className={classes["button-icon"]} />
+          ) : (
+            <>╳</>
+          )}
+        </button>
+      </div>
       <div className={classes.wrapper}>
-        <Filters
-          brands={brands}
-          onFilterChange={sortProducts}
-          onBrandFilter={brandFilterHandler}
-          onPriceFilter={priceFilterHandler}
-          category={""}
-        />
-        <div className={classes["products-list"]}>
+        <div
+          className={
+            showFilters
+              ? `${classes["show-filters"]} ${classes.filters}`
+              : classes.filters
+          }
+        >
+          <h3>Filters</h3>
+          <Filters
+            brands={brands}
+            onFilterChange={sortProducts}
+            onBrandFilter={brandFilterHandler}
+            onPriceFilter={priceFilterHandler}
+            category={""}
+          />
+        </div>
+        <div className={classes["products-list-a"]}>
           {isLoading ? (
             <LoadingSpinner />
           ) : productsToShow.length > 0 ? (
@@ -202,42 +224,46 @@ const AllProducts = () => {
           )}
         </div>
       </div>
-      <div className={paginationClasses["pages-list"]}>
-        <Link
-          href={`/products?page=${page - 1}`}
-          className={
-            page === 1 ? paginationClasses.hidden : paginationClasses["page-no"]
-          }
-        >
-          Previous
-        </Link>
-        {[...Array(totalPages)].map((_, index) => {
-          return (
-            <Link
-              href={`/products?page=${index + 1}`}
-              key={index}
-              className={
-                page === index + 1
-                  ? `${paginationClasses["page-no"]} ${paginationClasses.active}`
-                  : paginationClasses["page-no"]
-              }
-            >
-              {index + 1}
-            </Link>
-          );
-        })}
-        <Link
-          href={`/products?page=${page + 1}`}
-          className={
-            page === totalPages
-              ? paginationClasses.hidden
-              : paginationClasses["page-no"]
-          }
-        >
-          Next
-        </Link>
-      </div>
-    </>
+      {totalPages > 1 && (
+        <div className={paginationClasses["pages-list"]}>
+          <Link
+            href={`/products?page=${page - 1}`}
+            className={
+              page === 1
+                ? paginationClasses.hidden
+                : paginationClasses["page-no"]
+            }
+          >
+            &lt;
+          </Link>
+          {[...Array(totalPages)].map((_, index) => {
+            return (
+              <Link
+                href={`/products?page=${index + 1}`}
+                key={index}
+                className={
+                  page === index + 1
+                    ? `${paginationClasses["page-no"]} ${paginationClasses.active}`
+                    : paginationClasses["page-no"]
+                }
+              >
+                {index + 1}
+              </Link>
+            );
+          })}
+          <Link
+            href={`/products?page=${page + 1}`}
+            className={
+              page === totalPages
+                ? paginationClasses.hidden
+                : paginationClasses["page-no"]
+            }
+          >
+            &gt;
+          </Link>
+        </div>
+      )}
+    </div>
   );
 };
 

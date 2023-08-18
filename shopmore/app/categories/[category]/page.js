@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import classes from "@/styles/ProductsListingPage.module.css";
 import paginationClasses from "@/styles/Pagination.module.css";
 import ListingPageProductItem from "@/components/ListingPageProductItem";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import Link from "next/link";
+import buttonClasses from "@/styles/Button.module.css";
 import Filters from "@/components/Filters";
+import { RiFilter3Line } from "react-icons/ri";
 
 const CategoryPage = ({ params }) => {
   const category = params.category;
@@ -22,6 +24,7 @@ const CategoryPage = ({ params }) => {
   const [isError, setIsError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
 
   const fetchProducts = async () => {
     setIsError("");
@@ -145,11 +148,7 @@ const CategoryPage = ({ params }) => {
   };
 
   const priceFilterHandler = (price) => {
-    if (price?.length > 0) {
-      setFilteredPrice([...price]);
-    } else {
-      setFilteredPrice([]);
-    }
+    setFilteredPrice(price);
   };
 
   useEffect(() => {
@@ -159,7 +158,7 @@ const CategoryPage = ({ params }) => {
     } else if (selectedBrands.length > 0 || filteredPrice.length > 0) {
       fetchProductsByFilters();
     }
-  }, [page, selectedBrands.length, filteredPrice.length]);
+  }, [page, selectedBrands.length, filteredPrice]);
 
   useEffect(() => {
     setProductsToShow([...products]);
@@ -170,17 +169,42 @@ const CategoryPage = ({ params }) => {
   }, []);
 
   return (
-    <>
-      <h2 className={classes.title}>Showing results for "{params.category}"</h2>
+    <div>
+      <div className={classes.top}>
+        <h4 className={classes.title}>
+          Showing results for "{params.category}"
+        </h4>
+        <button
+          className={`${classes["filters-button"]} ${buttonClasses.button}`}
+          onClick={() => {
+            setShowFilters((prev) => !prev);
+          }}
+        >
+          {!showFilters ? (
+            <RiFilter3Line className={classes["button-icon"]} />
+          ) : (
+            <>╳</>
+          )}
+        </button>
+      </div>
       <div className={classes.wrapper}>
-        <Filters
-          brands={brands}
-          onFilterChange={sortProducts}
-          onBrandFilter={brandFilterHandler}
-          onPriceFilter={priceFilterHandler}
-          category={category}
-        />
-        <div className={classes["products-list"]}>
+        <div
+          className={
+            showFilters
+              ? `${classes["show-filters"]} ${classes.filters}`
+              : classes.filters
+          }
+        >
+          <h3>Filters</h3>
+          <Filters
+            brands={brands}
+            onFilterChange={sortProducts}
+            onBrandFilter={brandFilterHandler}
+            onPriceFilter={priceFilterHandler}
+            category={category}
+          />
+        </div>
+        <div className={classes["products-list-b"]}>
           {isLoading ? (
             <LoadingSpinner />
           ) : productsToShow.length > 0 ? (
@@ -204,7 +228,7 @@ const CategoryPage = ({ params }) => {
           )}
         </div>
       </div>
-      {productsToShow.length > 0 && (
+      {totalPages > 1 && (
         <div className={paginationClasses["pages-list"]}>
           <Link
             href={`/categories/${params.category}?page=${page - 1}`}
@@ -214,7 +238,7 @@ const CategoryPage = ({ params }) => {
                 : paginationClasses["page-no"]
             }
           >
-            Previous
+            &lt;
           </Link>
           {[...Array(totalPages)].map((_, index) => {
             return (
@@ -239,11 +263,11 @@ const CategoryPage = ({ params }) => {
                 : paginationClasses["page-no"]
             }
           >
-            Next
+            &gt;
           </Link>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

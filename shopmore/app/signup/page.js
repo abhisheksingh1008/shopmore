@@ -74,7 +74,7 @@ const Signup = () => {
       }
 
       if (responseData.success) {
-        toast.success(`Signed up successfully`);
+        toast.success(`Registration successful!`);
         toast.success(`Welcome ${responseData?.user?.name}`);
       }
 

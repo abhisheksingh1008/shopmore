@@ -93,7 +93,7 @@ const AddCategoryPage = () => {
       if (!data.success) {
         throw new Error(data.message);
       } else {
-        toast.success(`New Category added successfully!`);
+        toast.success(`New Category added.`);
       }
     } catch (error) {
       console.log(error);
@@ -157,6 +157,16 @@ const AddCategoryPage = () => {
               ) : (
                 "Submit"
               )}
+            </button>
+            <button
+              type="button"
+              disabled={formData.isSubmitting}
+              onClick={() => {
+                router.back();
+              }}
+              className={`${classes["form-action"]} ${buttonClasses.button}`}
+            >
+              Cancel
             </button>
           </div>
         </form>

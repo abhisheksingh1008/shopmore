@@ -56,6 +56,7 @@ const getPopularProducts = async (req, res, next) => {
 };
 
 const getBestDealsProducts = async (req, res, next) => {
+  // console.log("sending best deal products to the client...");
   try {
     const products = await Product.find().sort({ discount: -1 }).limit(8);
 
@@ -509,6 +510,7 @@ const getDistinctBrandsByCategory = async (req, res, next) => {
 };
 
 const getAllProductCategories = async (req, res, next) => {
+  // console.log("sending categories to the client...");
   try {
     const categories = await ProductCategory.find();
 

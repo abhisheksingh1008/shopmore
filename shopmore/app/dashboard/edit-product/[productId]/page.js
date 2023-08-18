@@ -125,7 +125,7 @@ const EditProductPage = ({ params }) => {
       }
 
       if (data.success) {
-        toast.success("Product updated successfully!");
+        toast.success("Product updated.");
       }
 
       router.back();

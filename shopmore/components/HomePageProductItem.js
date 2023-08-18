@@ -67,8 +67,8 @@ const HomePageProductItem = ({
         <div className={classes["product-info"]}>
           <div className={classes["product-top"]}>
             <div className={classes["product-name"]}>
-              {name.substring(0, 15)}
-              {"..."}
+              {name.substring(0, 17)}
+              {name.length > 17 && <span>...</span>}
             </div>
             <div className={classes["product-price"]}>
               <span className={classes["text"]}>

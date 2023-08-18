@@ -56,13 +56,13 @@
 
 .form-actions button {
   width: 100%;
-  background-color: black;
-  color: white;
+  /* background-color: black;
+  color: white; */
 }
 
-.form-actions button:hover {
+/* .form-actions button:hover {
   color: black;
-}
+} */
 
 .form-action {
   margin-bottom: 1rem;

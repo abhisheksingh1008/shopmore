@@ -69,7 +69,7 @@ const page = () => {
       if (!data.success) {
         throw new Error(data.message);
       } else {
-        toast.success(`Product Reviewed successfully!`);
+        toast.success(`New Review added.`);
       }
     } catch (error) {
       console.log(error);

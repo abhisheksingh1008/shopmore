@@ -219,22 +219,40 @@ const Cart = () => {
                 <div className={classes["details"]}>
                   <div className={classes["price-detail-row"]}>
                     <span>Price({totalItemsInCart} items)</span>
-                    <span>&#x20B9;{cart.totalAmount.toFixed(0)}</span>
+                    <span>
+                      {cart.totalAmount.toLocaleString("en-IN", {
+                        maximumFractionDigits: 0,
+                        style: "currency",
+                        currency: "INR",
+                      })}
+                    </span>
                   </div>
                   <div className={classes["price-detail-row"]}>
                     <span>Discount</span>
-                    <span>&#x20B9;0</span>
+                    <span>
+                      {(0).toLocaleString("en-IN", {
+                        maximumFractionDigits: 0,
+                        style: "currency",
+                        currency: "INR",
+                      })}
+                    </span>
                   </div>
                   <div className={classes["price-detail-row"]}>
                     <span>Delivery Charges</span>
-                    <span>Free</span>
+                    <span style={{ color: "green" }}>Free</span>
                   </div>
                 </div>
                 <div
                   className={`${classes.total} ${classes["price-detail-row"]}`}
                 >
                   <span>Total Amount</span>
-                  <span>&#x20B9;{cart.totalAmount}</span>
+                  <span>
+                    {cart.totalAmount.toLocaleString("en-IN", {
+                      maximumFractionDigits: 0,
+                      style: "currency",
+                      currency: "INR",
+                    })}
+                  </span>
                 </div>
               </div>
               {totalItemsInCart > 0 && (

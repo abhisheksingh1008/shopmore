@@ -72,8 +72,8 @@ const Login = () => {
       }
 
       if (responseData.success) {
-        toast.success(`Logged in successfully`);
-        toast.success(`Welcome back ${responseData?.user?.name}`);
+        toast.success(`Login successful.`);
+        toast.success(`Welcome back ${responseData?.user?.name}!`);
       }
 
       authCtx.login(responseData.user);

@@ -26,7 +26,10 @@ const ListingPageProductItem = ({
         </div>
         <div className={classes["product-info"]}>
           <div className={classes["product-name"]}>{name}</div>
-          <div className={classes["product-description"]}>{description}</div>
+          <div className={classes["product-description"]}>
+            {description.substring(0, 120)}
+            {description.length > 75 && <span>...</span>}
+          </div>
           <div className={classes["product-rating"]}>
             <Rating rating={rating} />
             {`(${numReviews})`}
