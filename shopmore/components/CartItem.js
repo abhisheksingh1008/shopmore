@@ -5,7 +5,7 @@ import Link from "next/link";
 import CartItemCounter from "./CartItemCounter";
 
 const CartItem = ({ product, quantity, totalPrice, onChangeItemCount }) => {
-  const { _id, name, image, price, brand, discount, countInStock } = product;
+  const { _id, name, imageData, price, brand, discount, countInStock } = product;
 
   const countChangeHandler = (add) => {
     onChangeItemCount(_id, add);
@@ -17,7 +17,7 @@ const CartItem = ({ product, quantity, totalPrice, onChangeItemCount }) => {
         <Link href={`/products/${_id}`}>
           <div className={classes["image-container"]}>
             <img
-              src={image}
+              src={imageData.image_url}
               alt={`${name} image`}
               className={classes["product-image"]}
             />

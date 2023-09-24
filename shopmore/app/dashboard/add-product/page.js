@@ -23,6 +23,32 @@ const initialState = {
   success: "",
 };
 
+const handleFileUpload = async (filetype, file) => {
+  if (!file) return;
+  if (!filetype) filetype = "auto";
+
+  const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${filetype}/upload`;
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "ecommerce_product_images");
+
+  const response = await fetch(cloudinaryUrl, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error("Failed to upload file.");
+  }
+
+  const { secure_url, public_id } = data;
+
+  return { image_url: secure_url, public_id };
+};
+
 const AddProductPage = () => {
   const authCtx = useContext(AuthContext);
   const router = useRouter();
@@ -72,32 +98,6 @@ const AddProductPage = () => {
     fetchCategories();
   }, []);
 
-  const handleFileUpload = async (filetype, file) => {
-    if (!file) return;
-    if (!filetype) filetype = "auto";
-
-    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${filetype}/upload`;
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "ecommerce_product_images");
-
-    const response = await fetch(cloudinaryUrl, {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error("Failed to upload file.");
-    }
-
-    const { secure_url } = data;
-
-    return secure_url;
-  };
-
   const formSubmitHandler = async (event) => {
     event.preventDefault();
 
@@ -129,7 +129,7 @@ const AddProductPage = () => {
         throw new Error("Image is required.");
       }
 
-      const image_url = await handleFileUpload("image", formInputs.image);
+      let imageInfo = await handleFileUpload("image", formInputs.image);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URI}/products`,
@@ -143,7 +143,7 @@ const AddProductPage = () => {
             name: formInputs.name,
             description: formInputs.description,
             price: formInputs.price,
-            image: image_url,
+            imageData: imageInfo,
             category: formInputs.category,
             brand: formInputs.brand,
             countInStock: formInputs.countInStock,
@@ -163,22 +163,9 @@ const AddProductPage = () => {
       toast.success("New Product added.");
 
       setFormInputs(initialState);
-
-      // setFormInputs((prev) => {
-      //   return {
-      //     ...prev,
-      //     success: data.message,
-      //   };
-      // });
     } catch (error) {
       console.log(error);
       toast.error(error.message);
-      // setFormInputs((prev) => {
-      //   return {
-      //     ...prev,
-      //     errorMessage: error.message,
-      //   };
-      // });
     }
 
     setFormInputs((prev) => {

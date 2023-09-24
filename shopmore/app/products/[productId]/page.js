@@ -79,7 +79,6 @@ const ProductDetailPage = ({ params }) => {
 
   return (
     <>
-      {/* <div>Showing product with id: {params.productId}</div> */}
       {isLoading ? (
         <LoadingSpinner />
       ) : isError ? (
@@ -89,7 +88,7 @@ const ProductDetailPage = ({ params }) => {
           <div className={classes.wrapper}>
             <div className={classes["image-container"]}>
               <img
-                src={product.image}
+                src={product.imageData.image_url}
                 alt={`${product.name} image`}
                 className={classes["product-image"]}
               />

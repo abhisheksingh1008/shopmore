@@ -89,7 +89,7 @@ const createCheckoutSession = async (req, res, next) => {
           {
             path: "product",
             model: "Product",
-            select: "name image brand price discount countInStock",
+            select: "name imageData brand price discount countInStock",
           },
         ],
       },
@@ -117,7 +117,7 @@ const createCheckoutSession = async (req, res, next) => {
           currency: "INR",
           product_data: {
             name: item.product.name,
-            images: [item.product.image],
+            images: [item.product.imageData.image_url],
             description: item.product.description,
             metadata: {
               id: item.product._id,
@@ -252,7 +252,7 @@ const createOrder = async (customer, data) => {
         product: product._id,
         name: product.name,
         price: product.price,
-        image: product.image,
+        image: product.imageData.image_url,
         quantity: cartItems[cartItem].quantity,
       });
 

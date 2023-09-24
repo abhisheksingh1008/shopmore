@@ -113,7 +113,7 @@ const EditProductPage = ({ params }) => {
             brand: product.brand,
             countInStock: product.countInStock,
             discount: product.discount,
-            image: product.image,
+            imageData: product.imageData,
           }),
         }
       );

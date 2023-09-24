@@ -15,7 +15,7 @@ const AllCategories = ({ categories }) => {
               <CategoryItem
                 key={category.name}
                 name={category.name}
-                image={category.image}
+                image={category.imageData.image_url}
               />
             );
           })

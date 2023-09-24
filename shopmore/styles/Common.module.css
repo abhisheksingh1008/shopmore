@@ -1,5 +1,5 @@
 .section {
-  margin: 2rem 1rem;
+  margin: 1.75rem 1rem;
 }
 
 .section-top {
@@ -23,8 +23,8 @@
   margin-block: 1rem;
 }
 
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 1050px) {
   .section {
-    margin: 2rem 0.5rem;
+    margin-inline: 0.25rem;
   }
 }

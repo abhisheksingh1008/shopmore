@@ -1,6 +1,7 @@
 import Product from "../models/productModel.js";
 import HttpError from "../models/http-error.js";
 import ProductCategory from "../models/productCategoryModel.js";
+import categories from "../data/categories.js";
 import products from "../data/products.js";
 // import User from "../models/userModel.js";
 import { v2 as cloudinary } from "cloudinary";
@@ -31,6 +32,60 @@ const getProducts = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     return next(new HttpError("Failed to fetch products.", 500));
+  }
+};
+
+const searchProducts = async (req, res, next) => {
+  try {
+    let keyword = req.query.find
+      ? {
+          $or: [
+            { name: { $regex: req.query.find, $options: "i" } },
+            { description: { $regex: req.query.find, $options: "i" } },
+            { category: { $regex: req.query.find, $options: "i" } },
+            { brand: { $regex: req.query.find, $options: "i" } },
+          ],
+        }
+      : {};
+
+    let { page, limit } = req.query;
+
+    if (!page) page = 1;
+    if (!limit) limit = 12;
+
+    const count = await Product.countDocuments(keyword);
+    const products = await Product.find(keyword, {
+      _id: 1,
+      name: 1,
+      description: 1,
+      category: 1,
+      brand: 1,
+      price: 1,
+      imageData: 1,
+      sold: 1,
+      rating: 1,
+      discount: 1,
+      numReviews: 1,
+      countInStock: 1,
+    })
+      .skip(page * limit - limit)
+      .limit(12);
+
+    if (!products) {
+      return next(new HttpError("Failed to find products.", 400));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Products fetched successfully.",
+      count,
+      products,
+    });
+  } catch (error) {
+    console.log(error);
+    return next(
+      new HttpError("Something went wrong, failed to fetch products.", 500)
+    );
   }
 };
 
@@ -235,7 +290,7 @@ const createProduct = async (req, res, next) => {
       category,
       brand,
       price,
-      image,
+      imageData,
       countInStock,
       discount,
     } = req.body;
@@ -274,7 +329,7 @@ const createProduct = async (req, res, next) => {
       category,
       brand,
       price,
-      image,
+      imageData,
       countInStock: !countInStock ? 0 : countInStock,
       discount: productDiscount,
       user: req.user._id,
@@ -332,7 +387,7 @@ const updateProduct = async (req, res, next) => {
       category,
       brand,
       price,
-      image,
+      imageData,
       countInStock,
       discount,
     } = req.body;
@@ -342,7 +397,7 @@ const updateProduct = async (req, res, next) => {
     product.category = category ? category : product.category;
     product.brand = brand ? brand : product.brand;
     product.price = price ? price : product.price;
-    product.image = image ? image : product.image;
+    product.imageData = imageData ? imageData : product.imageData;
     product.countInStock = countInStock ? countInStock : product.countInStock;
     product.discount = discount ? discount : product.discount;
 
@@ -370,6 +425,23 @@ const deleteProduct = async (req, res, next) => {
     if (!product) {
       return next(new HttpError("Product not found.", 400));
     }
+
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
+    await cloudinary.uploader
+      .destroy(product.imageData.public_id, (err, res) => {
+        // console.log(err, res);
+      })
+      .then((res) => {
+        // console.log(res)
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     await Product.deleteOne({ _id: product._id });
 
@@ -533,9 +605,30 @@ const getAllProductCategories = async (req, res, next) => {
   }
 };
 
+const createManyCategories = async (req, res, next) => {
+  try {
+    categories.forEach((category) => {
+      category.user = req.user._id;
+    });
+
+    await ProductCategory.insertMany(categories);
+
+    res.status(201).json({
+      success: true,
+      message: "All categories added successfully to the DB.",
+      products,
+    });
+  } catch (error) {
+    console.log(error);
+    return next(
+      new HttpError("Something went wrong, creating categories failed.", 500)
+    );
+  }
+};
+
 const createProductCategory = async (req, res, next) => {
   try {
-    const { name, image } = req.body;
+    const { name, imageData } = req.body;
 
     const existingCategory = await ProductCategory.findOne({ name });
 
@@ -545,7 +638,7 @@ const createProductCategory = async (req, res, next) => {
 
     const newCategory = new ProductCategory({
       name,
-      image,
+      imageData,
       user: req.user._id,
     });
 
@@ -638,6 +731,7 @@ const productFiltersController = async (req, res, next) => {
 
 export {
   getProducts,
+  searchProducts,
   getPopularProducts,
   getBestDealsProducts,
   getMostSellingProducts,
@@ -654,6 +748,7 @@ export {
   getDistinctBrandsByCategory,
   getAllProductCategories,
   createProductCategory,
+  createManyCategories,
   deleteProductCategory,
   productFiltersController,
   generateSignatureForAssetUpload,

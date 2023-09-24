@@ -2,26 +2,41 @@
 
 import { useContext, useEffect, useState } from "react";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import AuthContext from "@/store/auth-context";
 import classes from "@/styles/Navbar.module.css";
 import logo from "@/shared/assets/logo.png";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiLogOut } from "react-icons/fi";
 import { HiShoppingCart } from "react-icons/hi";
-import { FiLogOut } from "react-icons/fi";
+import { CgProfile } from "react-icons/cg";
+import { IoChevronDownSharp } from "react-icons/io5";
 import btnClasses from "@/styles/Button.module.css";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
   const authCtx = useContext(AuthContext);
   const path = usePathname();
+  const router = useRouter();
 
   const [admin, setAdmin] = useState(false);
   const [showNavbar, setShowNavbar] = useState(false);
+  const [search, setSearch] = useState("");
 
   const logoutHandler = () => {
     authCtx.logout();
+  };
+
+  const searchHandler = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (search.trim().length === 0) {
+        toast.error("Please enter something in the input");
+        return;
+      }
+      router.push(`/search?find=${search}&page=1`);
+    }
   };
 
   const protect = async () => {
@@ -59,7 +74,7 @@ const Navbar = () => {
   }, [authCtx.user]);
 
   return (
-    <header>
+    <header className={classes.header}>
       <nav className={classes.navbar}>
         <Link className={classes["navbar-left"]} href={"/"}>
           <Image
@@ -72,6 +87,21 @@ const Navbar = () => {
           />
           <div className={classes["app-title"]}>Shopmore</div>
         </Link>
+        <div className={classes["navbar-right"]}>
+          <div className={`${classes.search} ${classes["navbar-option"]}}`}>
+            <form onKeyDown={searchHandler}>
+              <FiSearch className={classes["search-icon"]} />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+              />
+            </form>
+          </div>
+        </div>
         <div className={classes["navbar-mid"]}>
           <ul className={showNavbar ? classes.show : ""}>
             <li
@@ -138,26 +168,18 @@ const Navbar = () => {
                 <HiShoppingCart style={{ verticalAlign: "middle" }} /> Cart
               </Link>
             </li>
-            <li
-              onClick={() => {
-                setShowNavbar(false);
-              }}
-            >
-              <Link
-                href={!authCtx.user ? "/login" : "/myorders"}
-                className={
-                  path === "/myorders"
-                    ? `${classes["navbar-link"]} ${classes.active}`
-                    : classes["navbar-link"]
-                }
-              >
-                My Orders
-              </Link>
-            </li>
             {admin && (
               <li className={`${classes["navbar-link"]} w3-dropdown-hover`}>
-                <span>Dashboard</span>
-                <div className="w3-dropdown-content w3-bar-block w3-border">
+                <span>
+                  <span>Dashboard</span>
+                  <IoChevronDownSharp
+                    style={{ verticalAlign: "middle", paddingLeft: "2px" }}
+                  />
+                </span>
+                <div
+                  className="w3-dropdown-content w3-bar-block w3-border"
+                  style={{ right: 0 }}
+                >
                   <Link
                     href={"/dashboard/admin-products?page=1&limit=15"}
                     className="w3-bar-item w3-button"
@@ -197,35 +219,53 @@ const Navbar = () => {
                 </div>
               </li>
             )}
-            {authCtx.user && (
-              <li
-                onClick={() => {
-                  setShowNavbar(false);
-                }}
-              >
-                <Link
-                  href={!authCtx.user ? "/login" : "/profile"}
-                  className={
-                    path === "/profile"
-                      ? `${classes["navbar-link"]} ${classes.active}`
-                      : classes["navbar-link"]
-                  }
-                >
-                  My Account
-                </Link>
-              </li>
-            )}
-            <li
-              onClick={() => {
-                setShowNavbar(false);
-              }}
-            >
+            <li>
               {authCtx.user ? (
                 <span
-                  className={classes["navbar-link"]}
-                  onClick={logoutHandler}
+                  className={`${classes["navbar-link"]} w3-dropdown-hover`}
+                  style={{
+                    backgroundColor: "transparent",
+                  }}
                 >
-                  <FiLogOut style={{ verticalAlign: "middle" }} /> Logout
+                  <CgProfile
+                    style={{ fontSize: "1.3rem", verticalAlign: "middle" }}
+                  />
+                  <IoChevronDownSharp
+                    style={{
+                      fontSize: "1.1rem",
+                      verticalAlign: "middle",
+                      paddingLeft: "2px",
+                    }}
+                  />
+                  <div
+                    className="w3-dropdown-content w3-bar-block w3-border"
+                    style={{ right: 0 }}
+                  >
+                    <Link
+                      href={!authCtx.user ? "/login" : "/profile"}
+                      className="w3-bar-item w3-button"
+                      onClick={() => {
+                        setShowNavbar(false);
+                      }}
+                    >
+                      My Account
+                    </Link>
+                    <Link
+                      href={!authCtx.user ? "/login" : "/myorders"}
+                      className="w3-bar-item w3-button"
+                      onClick={() => {
+                        setShowNavbar(false);
+                      }}
+                    >
+                      My Orders
+                    </Link>
+                    <span
+                      className="w3-bar-item w3-button"
+                      onClick={logoutHandler}
+                    >
+                      <FiLogOut style={{ verticalAlign: "middle" }} /> Logout
+                    </span>
+                  </div>
                 </span>
               ) : (
                 <Link href={"/login"} className={classes["navbar-link"]}>
@@ -253,13 +293,20 @@ const Navbar = () => {
         >
           {!showNavbar ? "☰" : "╳"}
         </button>
-        {/* <div className={classes["navbar-right"]}>
-          <div className={`${classes.search} ${classes["navbar-option"]}}`}>
-            <input type="text" placeholder="Search products" />
-            <FiSearch className={classes["search-icon"]} />
-          </div>
-        </div> */}
       </nav>
+      <div className={`${classes["mobile-search"]}`}>
+        <form onKeyDown={searchHandler}>
+          <FiSearch className={classes["search-icon"]} />
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+          />
+        </form>
+      </div>
     </header>
   );
 };

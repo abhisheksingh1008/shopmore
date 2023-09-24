@@ -18,7 +18,7 @@ const MostSellingProducts = ({ mostSellingProducts }) => {
                   id={product._id}
                   name={product.name}
                   description={product.description}
-                  image={product.image}
+                  image={product.imageData.image_url}
                   price={product.price}
                   rating={product.rating}
                   numReviews={product.numReviews}

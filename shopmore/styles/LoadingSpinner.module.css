@@ -2,18 +2,16 @@
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  border: 5px solid transparent;
-  border-top-color: rgb(40, 36, 36);
-  border-bottom-color: rgb(40, 36, 36);
-  animation: loading 1.5s ease infinite;
+  background: radial-gradient(farthest-side, black 94%, #0000) top/4px 4px
+      no-repeat,
+    conic-gradient(#0000 30%, black);
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 4px), #000 0);
+  animation: s3 1s infinite linear;
   margin: auto;
 }
 
-@keyframes loading {
-  form {
-    transform: rotate(0turn);
-  }
-  to {
+@keyframes s3 {
+  100% {
     transform: rotate(1turn);
   }
 }

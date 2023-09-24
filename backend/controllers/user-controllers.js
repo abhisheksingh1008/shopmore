@@ -269,7 +269,7 @@ const getUserCart = async (req, res, next) => {
           {
             path: "product",
             model: "Product",
-            select: "name image brand price discount countInStock",
+            select: "name imageData brand price discount countInStock",
           },
         ],
       },
@@ -343,7 +343,7 @@ const addItemToCart = async (req, res, next) => {
           {
             path: "product",
             model: "Product",
-            select: "name image brand price discount countInStock",
+            select: "name imageData brand price discount countInStock",
           },
         ],
       },
@@ -409,7 +409,7 @@ const removeItemFromCart = async (req, res, next) => {
           {
             path: "product",
             model: "Product",
-            select: "name image brand price discount countInStock",
+            select: "name imageData brand price discount countInStock",
           },
         ],
       },

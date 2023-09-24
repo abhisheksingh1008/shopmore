@@ -17,7 +17,7 @@ const getCategories = async () => {
   )
     .then(async (response) => {
       const data = await response.json();
-      // console.log(data);
+      // console.log("All Categories : ", data);
       return data.categories;
     })
     .catch((err) => {
@@ -35,7 +35,7 @@ const getBestDeals = async () => {
   )
     .then(async (response) => {
       const data = await response.json();
-      // console.log(data);
+      // console.log("BestDeals : ", data);
       return data.products;
     })
     .catch((err) => {
@@ -52,7 +52,7 @@ const getMostSellingProducts = async () => {
   )
     .then(async (response) => {
       const data = await response.json();
-      // console.log(data);
+      // console.log("Most Selling : ", data);
       return data.products;
     })
     .catch((err) => {
@@ -69,7 +69,7 @@ const getWeeklyPopularProducts = async () => {
   )
     .then(async (response) => {
       const data = await response.json();
-      // console.log(data);
+      // console.log("Weelly popular : ", data);
       return data.products;
     })
     .catch((err) => {

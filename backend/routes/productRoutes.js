@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   getProducts,
+  searchProducts,
   getPopularProducts,
   getBestDealsProducts,
   getMostSellingProducts,
@@ -18,6 +19,7 @@ import {
   getDistinctBrandsByCategory,
   getAllProductCategories,
   createProductCategory,
+  createManyCategories,
   deleteProductCategory,
   productFiltersController,
   generateSignatureForAssetUpload,
@@ -27,6 +29,7 @@ import { requireSignIn, admin } from "../middlewares/authMiddlewares.js";
 const router = Router();
 
 router.get("/", getProducts);
+router.get("/search", searchProducts);
 router.get("/popular", getPopularProducts);
 router.get("/mostselling", getMostSellingProducts);
 router.get("/bestdeals", getBestDealsProducts);

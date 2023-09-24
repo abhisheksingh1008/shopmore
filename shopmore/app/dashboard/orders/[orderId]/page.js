@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useContext } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import commonClasses from "@/styles/Common.module.css";
 import classes from "@/styles/OrderDetailPage.module.css";
+import commonClasses from "@/styles/Common.module.css";
 import AuthContext from "@/store/auth-context";
+import OrderItem from "@/components/OrderItem";
 
 const page = ({ params }) => {
   const orderId = params.orderId;
@@ -150,43 +151,6 @@ const page = ({ params }) => {
           </div>
         )
       )}
-    </div>
-  );
-};
-
-const OrderItem = ({ name, price, quantity, image }) => {
-  return (
-    <div className={classes.wrapper}>
-      <div className={classes["image-area"]}>
-        <img
-          src={image}
-          alt="product-image"
-          className={classes["product-image"]}
-        />
-      </div>
-      <div className={classes["item-details"]}>
-        <div className={classes["product-name"]}>{name}</div>
-        <div className={classes["price"]}>
-          <span style={{ marginRight: "0.75rem" }}>
-            {(price * quantity).toLocaleString("en-IN", {
-              maximumFractionDigits: 0,
-              style: "currency",
-              currency: "INR",
-            })}
-          </span>
-          {quantity > 1 && (
-            <span style={{ fontWeight: 500 }}>
-              {price.toLocaleString("en-IN", {
-                maximumFractionDigits: 0,
-                style: "currency",
-                currency: "INR",
-              })}{" "}
-              each
-            </span>
-          )}
-        </div>
-        <div>qty : {quantity}</div>
-      </div>
     </div>
   );
 };

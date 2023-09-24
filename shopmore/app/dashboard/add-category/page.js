@@ -16,6 +16,34 @@ const initialState = {
   errorMessage: null,
 };
 
+const handleFileUpload = async (filetype, file) => {
+  if (!file) return;
+  if (!filetype) {
+    filetype = "auto";
+  }
+
+  const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${filetype}/upload`;
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "ecommerce_product_images");
+
+  const response = await fetch(cloudinaryUrl, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error("Failed to upload file.");
+  }
+
+  const { secure_url, public_id } = data;
+
+  return { image_url: secure_url, public_id };
+};
+
 const AddCategoryPage = () => {
   const authCtx = useContext(AuthContext);
   const router = useRouter();
@@ -31,34 +59,6 @@ const AddCategoryPage = () => {
     });
   };
 
-  const handleFileUpload = async (filetype, file) => {
-    if (!file) return;
-    if (!filetype) {
-      filetype = "auto";
-    }
-
-    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${filetype}/upload`;
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "ecommerce_product_images");
-
-    const response = await fetch(cloudinaryUrl, {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error("Failed to upload file.");
-    }
-
-    const { secure_url } = data;
-
-    return secure_url;
-  };
-
   const addCategoryHandler = async (event) => {
     event.preventDefault();
     setFormData((prev) => {
@@ -68,9 +68,24 @@ const AddCategoryPage = () => {
       };
     });
 
-    try {
-      const image_url = await handleFileUpload("image", formData.image);
+    let imageInfo;
+    // try {
+    // } catch (error) {
+    //   console.log(error);
+    //   toast.error("Something went wrong, failed to create new category.");
+    //   return;
+    // }
 
+    try {
+      if (formData.name.trim().length === 0) {
+        throw new Error("Name is required.");
+      }
+      if (formData.image === null) {
+        throw new Error("Image is required.");
+      }
+
+      imageInfo = await handleFileUpload("image", formData.image);
+      
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URI}/products/categories`,
         {
@@ -81,7 +96,7 @@ const AddCategoryPage = () => {
           },
           body: JSON.stringify({
             name: formData.name,
-            image: image_url,
+            imageData: imageInfo,
           }),
         }
       );
