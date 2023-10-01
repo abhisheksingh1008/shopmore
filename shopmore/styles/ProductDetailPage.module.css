@@ -131,7 +131,7 @@
 .no-reviews {
   font-size: var(--fs-small);
   font-weight: 500;
-  padding: 1.25rem;
+  padding: 1.5rem;
   padding-top: 0;
 }
 
@@ -152,5 +152,14 @@
     min-width: 100%;
     min-height: fit-content;
     max-height: fit-content;
+  }
+
+  .product-info {
+    padding: 0.5rem 0.15rem;
+  }
+
+  .heading,
+  .no-reviews {
+    padding: 0.75rem;
   }
 }

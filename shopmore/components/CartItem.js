@@ -5,7 +5,8 @@ import Link from "next/link";
 import CartItemCounter from "./CartItemCounter";
 
 const CartItem = ({ product, quantity, totalPrice, onChangeItemCount }) => {
-  const { _id, name, imageData, price, brand, discount, countInStock } = product;
+  const { _id, name, imageData, price, brand, discount, countInStock } =
+    product;
 
   const countChangeHandler = (add) => {
     onChangeItemCount(_id, add);
@@ -33,7 +34,7 @@ const CartItem = ({ product, quantity, totalPrice, onChangeItemCount }) => {
           </Link>
           {countInStock === 0 ? (
             <div className={classes["out-of-stock"]}>Out Of Stock</div>
-          ) : countInStock < 1000 ? (
+          ) : countInStock < 100 ? (
             <div className={classes["stock-left"]}>
               Hurry only {countInStock} left!
             </div>

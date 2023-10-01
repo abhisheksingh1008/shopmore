@@ -128,7 +128,10 @@ const page = ({ params }) => {
                   currency: "INR",
                 })}
               </div>
-              <div>Payment intent : </div>
+              <div>
+                Payment intent :{" "}
+                {orderData.order.paymentResult?.payment_intent_id}
+              </div>
               <div>
                 Email address : {orderData.order.paymentResult.email_address}
               </div>

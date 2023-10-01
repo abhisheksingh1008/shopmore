@@ -11,6 +11,7 @@ const Filters = ({
   onFilterChange,
   onBrandFilter,
   onPriceFilter,
+  onRatingFilter,
   category,
 }) => {
   const router = useRouter();
@@ -44,7 +45,7 @@ const Filters = ({
           type="submit"
           className={filterClasses["clear-btn"]}
           onClick={() => {
-            onFilterChange("None");
+            onRatingFilter(0);
           }}
         >
           Clear
@@ -54,7 +55,7 @@ const Filters = ({
             <button
               type="button"
               onClick={() => {
-                onFilterChange("4 stars & Up");
+                onRatingFilter(4);
               }}
             >
               <FourStars /> & Up
@@ -64,7 +65,7 @@ const Filters = ({
             <button
               type="button"
               onClick={() => {
-                onFilterChange("3 stars & Up");
+                onRatingFilter(3);
               }}
             >
               <ThreeStars /> & Up
@@ -74,7 +75,7 @@ const Filters = ({
             <button
               type="button"
               onClick={() => {
-                onFilterChange("2 stars & Up");
+                onRatingFilter(2);
               }}
             >
               <TwoStars /> & Up
@@ -84,7 +85,7 @@ const Filters = ({
             <button
               type="button"
               onClick={() => {
-                onFilterChange("1 stars & Up");
+                onRatingFilter(1);
               }}
             >
               <OneStar /> & Up

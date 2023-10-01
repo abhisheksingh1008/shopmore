@@ -217,25 +217,41 @@ const stripeWebhook = async (req, res, next) => {
 
       await stripe.customers
         .retrieve(data.customer)
-        .then((customer) => {
+        .then(async (customer) => {
           // console.log("Customer is : ", customer);
           // console.log("Data is : ", data);
-          createOrder(customer, data);
+          const order = await createOrder(customer, data);
+
+          if (!order) {
+            throw new Error("Something went wrong while creating the order.");
+          }
+
+          let existingUser = await User.findById(customer.metadata.userId);
+
+          if (!existingUser) {
+            throw new Error(
+              "Something went wrong while creating the order, failed to find user."
+            );
+          }
+
+          existingUser.cart.cartItems = [];
+          existingUser.cart.totalAmount = 0;
+
+          await existingUser.save();
+
+          res.status(200).json({ success: true });
         })
         .catch((error) => {
           console.log(error);
         });
-
-      res.status(200).json({
-        success: true,
-      });
     } else {
       // console.log(`Unhandled event type ${eventType}`);
+      res.status(200).json({});
       return;
     }
   } catch (error) {
-    // res.status(400).send(`Webhook Error: ${err.message}`);
     console.log(error);
+    // res.status(400).send(`Webhook Error: ${err.message}`);
   }
 };
 
@@ -278,7 +294,7 @@ const createOrder = async (customer, data) => {
 
     const paymentResult = {
       payment_method: data.payment_method_types[0],
-      payment_intent_id: data.payment_intent_id,
+      payment_intent_id: data.payment_intent,
       payment_status: data.payment_status,
       email_address: data.customer_details.email,
     };
@@ -294,8 +310,11 @@ const createOrder = async (customer, data) => {
     });
 
     await createdOrder.save();
+
+    return createdOrder;
   } catch (error) {
     console.log(error);
+    return null;
   }
 };
 

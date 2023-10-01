@@ -9,33 +9,31 @@ const AdminDashboardPage = () => {
   const router = useRouter();
 
   return (
-    <>
-      <div className={commonClasses.section}>
-        <div className={commonClasses["section-top"]}>
-          <div className={commonClasses["section-title"]}>Products</div>
-          <div>
-            <button
-              onClick={() => {
-                router.push("/dashboard/add-product");
-              }}
-              className={classes.button}
-              style={{ marginRight: "0.5rem" }}
-            >
-              Add Product
-            </button>
-            <button
-              onClick={() => {
-                router.push("/dashboard/add-category");
-              }}
-              className={classes.button}
-            >
-              Add Category
-            </button>
-          </div>
+    <div className={commonClasses.section} style={{ marginTop: "5rem" }}>
+      <div className={commonClasses["section-top"]}>
+        <div className={commonClasses["section-title"]}>Products</div>
+        <div>
+          <button
+            onClick={() => {
+              router.push("add-product");
+            }}
+            className={classes.button}
+            style={{ marginRight: "0.5rem" }}
+          >
+            Add Product
+          </button>
+          <button
+            onClick={() => {
+              router.push("add-category");
+            }}
+            className={classes.button}
+          >
+            Add Category
+          </button>
         </div>
-        <ProductsTable />
       </div>
-    </>
+      <ProductsTable />
+    </div>
   );
 };
 

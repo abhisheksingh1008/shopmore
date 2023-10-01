@@ -3,7 +3,7 @@ import commonClasses from "@/styles/Common.module.css";
 
 const page = () => {
   return (
-    <div className={commonClasses.section}>
+    <div className={commonClasses.section} style={{ marginTop: "5rem" }}>
       <div className={commonClasses.section}>
         <div className={commonClasses["section-top"]}>
           <div className={commonClasses["section-title"]}>Orders</div>

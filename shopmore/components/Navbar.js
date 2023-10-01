@@ -242,7 +242,8 @@ const Navbar = () => {
                     style={{ right: 0 }}
                   >
                     <Link
-                      href={!authCtx.user ? "/login" : "/profile"}
+                      // href={!authCtx.user ? "/login" : "/profile"}
+                      href={"/"}
                       className="w3-bar-item w3-button"
                       onClick={() => {
                         setShowNavbar(false);

@@ -17,6 +17,7 @@ const initialState = {
   name: "",
   email: "",
   password: "",
+  confirmedPassword: "",
   isSubmitting: false,
   errorMessage: null,
 };
@@ -42,6 +43,11 @@ const Signup = () => {
 
   const formSubmitHandler = async (event) => {
     event.preventDefault();
+
+    if (data.password !== data.confirmedPassword) {
+      toast.error("Passwords did not match.");
+      return;
+    }
 
     setData((prev) => {
       return {
@@ -139,6 +145,17 @@ const Signup = () => {
                 id="password"
                 name="password"
                 value={data.password}
+                onChange={inputChangeHandler}
+                required
+              />
+            </div>
+            <div className={classes["form-control"]}>
+              <label htmlFor="password">Confirm Password : </label>
+              <input
+                type="password"
+                id="password"
+                name="confirmedPassword"
+                value={data.confirmedPassword}
                 onChange={inputChangeHandler}
                 required
               />

@@ -17,10 +17,11 @@ const CategoryPage = ({ params }) => {
   const page = Number(useSearchParams().get("page"));
 
   const [products, setProducts] = useState([]);
-  const [productsToShow, setProductsToShow] = useState([]);
   const [brands, setBrands] = useState([]);
-  const [selectedBrands, setSelectedBrands] = useState([]);
   const [filteredPrice, setFilteredPrice] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
+  const [selectedSortByFilter, setSelectedSortByFilter] = useState("");
+  const [selectedRatingFilter, setSelectedRatingFilter] = useState(0);
   const [isError, setIsError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
@@ -61,9 +62,11 @@ const CategoryPage = ({ params }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            brands: selectedBrands,
-            price: filteredPrice,
             category,
+            price: filteredPrice,
+            brands: selectedBrands,
+            sortBy: selectedSortByFilter,
+            rating: selectedRatingFilter,
           }),
         }
       );
@@ -101,40 +104,16 @@ const CategoryPage = ({ params }) => {
     }
   };
 
-  const sortProducts = (value) => {
-    let prods = [...products];
-    switch (value) {
-      case "None":
-        setProductsToShow(prods);
-        break;
-      case "Price Ascending":
-        setProductsToShow(prods.sort((a, b) => a.price - b.price));
-        break;
-      case "Price Descending":
-        setProductsToShow(prods.sort((a, b) => b.price - a.price));
-        break;
-      case "Most Rating":
-        setProductsToShow(prods.sort((a, b) => b.rating - a.rating));
-        break;
-      case "Most Reviews":
-        setProductsToShow(prods.sort((a, b) => b.numReviews - a.numReviews));
-        break;
-      case "4 stars & Up":
-        setProductsToShow(prods.filter((prod) => prod.rating > 4));
-        break;
-      case "3 stars & Up":
-        setProductsToShow(prods.filter((prod) => prod.rating > 3));
-        break;
-      case "2 stars & Up":
-        setProductsToShow(prods.filter((prod) => prod.rating > 2));
-        break;
-      case "1 stars & Up":
-        setProductsToShow(prods.filter((prod) => prod.rating > 1));
-        break;
-      default:
-        setProductsToShow(prods);
-        break;
+  const sortByFilterHandler = (value) => {
+    if (value === "None") {
+      setSelectedSortByFilter("");
+    } else {
+      setSelectedSortByFilter(value);
     }
+  };
+
+  const ratingFilterHandler = (rating) => {
+    setSelectedRatingFilter(rating);
   };
 
   const brandFilterHandler = (brandName, value) => {
@@ -152,17 +131,28 @@ const CategoryPage = ({ params }) => {
   };
 
   useEffect(() => {
-    // console.log(selectedBrands);
-    if (selectedBrands.length === 0 && filteredPrice.length === 0) {
+    if (
+      selectedBrands.length === 0 &&
+      filteredPrice.length === 0 &&
+      selectedSortByFilter.length === 0 &&
+      selectedRatingFilter === 0
+    ) {
       fetchProducts();
-    } else if (selectedBrands.length > 0 || filteredPrice.length > 0) {
+    } else if (
+      selectedBrands.length > 0 ||
+      filteredPrice.length > 0 ||
+      selectedSortByFilter.length > 0 ||
+      selectedRatingFilter > 0
+    ) {
       fetchProductsByFilters();
     }
-  }, [page, selectedBrands.length, filteredPrice]);
-
-  useEffect(() => {
-    setProductsToShow([...products]);
-  }, [products]);
+  }, [
+    page,
+    selectedBrands.length,
+    filteredPrice,
+    selectedSortByFilter,
+    selectedRatingFilter,
+  ]);
 
   useEffect(() => {
     fetchAllBrandFilters();
@@ -198,17 +188,18 @@ const CategoryPage = ({ params }) => {
           <h3>Filters</h3>
           <Filters
             brands={brands}
-            onFilterChange={sortProducts}
+            onFilterChange={sortByFilterHandler}
             onBrandFilter={brandFilterHandler}
             onPriceFilter={priceFilterHandler}
+            onRatingFilter={ratingFilterHandler}
             category={category}
           />
         </div>
         <div className={classes["products-list-b"]}>
           {isLoading ? (
             <LoadingSpinner />
-          ) : productsToShow.length > 0 ? (
-            productsToShow.map((product) => {
+          ) : products.length > 0 ? (
+            products.map((product) => {
               return (
                 <ListingPageProductItem
                   key={product._id}

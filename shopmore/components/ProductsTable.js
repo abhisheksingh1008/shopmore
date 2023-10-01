@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import AuthContext from "@/store/auth-context";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -34,8 +34,9 @@ const ProductsTable = () => {
 
   const page = Number(useSearchParams().get("page"));
 
-  const [modalIsVisible, setModalIsVisible] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [deletingProduct, setDeletingProduct] = useState(false);
+  const modalRef = useRef(null);
 
   const fetchProducts = async () => {
     setProductsData((prev) => {
@@ -90,6 +91,7 @@ const ProductsTable = () => {
   };
 
   const deleteProductHandler = async (productId) => {
+    setDeletingProduct(true);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URI}/products/${productId}`,
@@ -103,8 +105,9 @@ const ProductsTable = () => {
 
       const data = await response.json();
 
+      setDeletingProduct(false);
+
       if (!data.success) {
-        toast.error("Failed to delete product.");
         throw new Error(data.message);
       } else {
         toast.success("Product deleted successfully!");
@@ -122,15 +125,11 @@ const ProductsTable = () => {
   }, [page]);
 
   return (
-    <div className="w3-responsive">
-      <div
-        className={modalIsVisible ? `w3-modal ${classes.visible}` : "w3-modal"}
-      >
-        <div className="w3-modal-content" style={{ padding: "1rem" }}>
-          <div className="w3-container">
-            <div>Are you sure you want to delete this product?</div>
-          </div>
-          <footer className="w3-container" style={{ textAlign: "right" }}>
+    <div className={`w3-responsive ${classes.wrapper}`}>
+      <dialog className={classes.modal} ref={modalRef}>
+        <div className={classes["modal-content"]}>
+          <div>Are you sure you want to delete this product?</div>
+          <div className={classes["modal-actions"]}>
             <button
               className={classes.button}
               style={{ marginRight: "0.5rem" }}
@@ -139,23 +138,23 @@ const ProductsTable = () => {
                   await deleteProductHandler(productToDelete);
                 }
                 setProductToDelete(null);
-                setModalIsVisible(false);
+                modalRef.current.close();
               }}
             >
-              Confirm
+              {deletingProduct ? "Deleting..." : "Confirm"}
             </button>
             <button
               className={classes.button}
               onClick={() => {
-                setModalIsVisible(false);
                 setProductToDelete(null);
+                modalRef.current.close();
               }}
             >
               Cancel
             </button>
-          </footer>
+          </div>
         </div>
-      </div>
+      </dialog>
       {productsData.isLoading ? (
         <LoadingSpinner />
       ) : (
@@ -199,8 +198,8 @@ const ProductsTable = () => {
                     <td style={{ cursor: "pointer" }}>
                       <MdDelete
                         onClick={() => {
-                          setModalIsVisible(true);
                           setProductToDelete(product._id);
+                          modalRef.current.showModal();
                         }}
                       />
                     </td>

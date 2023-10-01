@@ -9,6 +9,32 @@ import classes from "@/styles/Form.module.css";
 import buttonClasses from "@/styles/Button.module.css";
 import toast from "react-hot-toast";
 
+const handleFileUpload = async (filetype, file) => {
+  if (!file) return;
+  if (!filetype) filetype = "auto";
+
+  const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${filetype}/upload`;
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "ecommerce_product_images");
+
+  const response = await fetch(cloudinaryUrl, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error("Failed to upload file.");
+  }
+
+  const { secure_url, public_id } = data;
+
+  return { image_url: secure_url, public_id };
+};
+
 const EditProductPage = ({ params }) => {
   const authCtx = useContext(AuthContext);
   const router = useRouter();
@@ -29,10 +55,10 @@ const EditProductPage = ({ params }) => {
     image: "",
   });
   const [categories, setCategories] = useState([]);
-  const [image, setImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isError, setIsError] = useState("");
+  const [image, setImage] = useState(null);
 
   const inputChangeHandler = (event) => {
     setProduct((prev) => {
@@ -97,6 +123,12 @@ const EditProductPage = ({ params }) => {
 
     setIsSubmitting(true);
     try {
+      let imageInfo;
+
+      if (image !== null) {
+        imageInfo = await handleFileUpload("image", image);
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URI}/products/${params.productId}`,
         {
@@ -113,7 +145,7 @@ const EditProductPage = ({ params }) => {
             brand: product.brand,
             countInStock: product.countInStock,
             discount: product.discount,
-            imageData: product.imageData,
+            imageData: imageInfo ? imageInfo : product.imageData,
           }),
         }
       );
@@ -255,7 +287,7 @@ const EditProductPage = ({ params }) => {
                     disabled={isSubmitting}
                     className={`${classes["form-action"]} ${buttonClasses.button}`}
                   >
-                    {product.isSubmitting ? (
+                    {isSubmitting ? (
                       <LoadingSpinner className={classes.loadingSpinner} />
                     ) : (
                       "Save"

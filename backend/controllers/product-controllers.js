@@ -5,6 +5,7 @@ import categories from "../data/categories.js";
 import products from "../data/products.js";
 // import User from "../models/userModel.js";
 import { v2 as cloudinary } from "cloudinary";
+import { getValueForSortingByString } from "../utils/productHelpers.js";
 
 const getProducts = async (req, res, next) => {
   try {
@@ -315,6 +316,10 @@ const createProduct = async (req, res, next) => {
       return next(new HttpError("Price is required.", 400));
     }
 
+    if (!imageData || imageData?.image_url.length === 0) {
+      return next(new HttpError("Image is required.", 400));
+    }
+
     let productDiscount;
 
     if (!discount) {
@@ -392,6 +397,27 @@ const updateProduct = async (req, res, next) => {
       discount,
     } = req.body;
 
+    if (product.imageData?.image_url !== imageData?.image_url) {
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+      });
+
+      await cloudinary.uploader
+        .destroy(product.imageData?.public_id, (err, res) => {
+          // console.log(err, res);
+        })
+        .then((res) => {
+          // console.log(res)
+        })
+        .catch((err) => {
+          console.log(err);
+
+          throw new Error("Something went wrong, failed to update product.");
+        });
+    }
+
     product.name = name ? name : product.name;
     product.description = description ? description : product.description;
     product.category = category ? category : product.category;
@@ -433,7 +459,7 @@ const deleteProduct = async (req, res, next) => {
     });
 
     await cloudinary.uploader
-      .destroy(product.imageData.public_id, (err, res) => {
+      .destroy(product.imageData?.public_id, (err, res) => {
         // console.log(err, res);
       })
       .then((res) => {
@@ -441,6 +467,8 @@ const deleteProduct = async (req, res, next) => {
       })
       .catch((err) => {
         console.log(err);
+
+        throw new Error("Something went wrong, failed to delete product.");
       });
 
     await Product.deleteOne({ _id: product._id });
@@ -451,7 +479,9 @@ const deleteProduct = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    return next(new HttpError("", 500));
+    return next(
+      new HttpError("Something went wrong, failed to delete product.", 500)
+    );
   }
 };
 
@@ -465,15 +495,27 @@ const createProductReview = async (req, res, next) => {
       return next(new HttpError("Product not found.", 400));
     }
 
-    const productAlreadyReviewd = product.reviews.find(
+    const productAlreadyReviewed = product.reviews.find(
       (review) => review.user.toString() === req.user._id.toString()
     );
 
-    if (productAlreadyReviewd) {
-      return next(new HttpError("Product already reviewd.", 400));
+    if (productAlreadyReviewed) {
+      return next(new HttpError("Product already reviewed.", 400));
     }
 
     const { title, rating, comment } = req.body;
+
+    if (!rating || rating === 0) {
+      return next(new HttpError("Rating is required.", 400));
+    }
+
+    if (!title || title.trim().length === 0) {
+      return next(new HttpError("Title is required.", 400));
+    }
+
+    if (!comment || comment.trim().length === 0) {
+      return next(new HttpError("Comment is required.", 400));
+    }
 
     const review = {
       title,
@@ -685,24 +727,33 @@ const deleteProductCategory = async (req, res, next) => {
 
 const productFiltersController = async (req, res, next) => {
   try {
-    const { category, brands, price } = req.body;
+    const { category, brands, price, rating, sortBy } = req.body;
     const page = req.query.page;
 
-    // console.log(brands, price);
+    // console.log(brands, price, sortBy);
 
-    let args = {};
+    let args = {},
+      sortValue = {};
+
     if (category) {
       args.category = category;
     }
-    if (brands?.length !== 0) {
+    if (brands?.length > 0) {
       args.brand = brands;
     }
-    if (price?.length !== 0) {
+    if (price?.length > 0) {
       args.price = { $gte: price[0], $lte: price[1] };
+    }
+    if (rating > 0) {
+      args.rating = { $gte: rating };
+    }
+    if (sortBy?.length > 0) {
+      sortValue = getValueForSortingByString(sortBy);
     }
 
     const count = await Product.countDocuments(args);
     const products = await Product.find(args)
+      .sort(sortValue)
       .skip(page * 12 - 12)
       .limit(12);
 

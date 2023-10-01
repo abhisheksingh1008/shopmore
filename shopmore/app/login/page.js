@@ -2,15 +2,16 @@
 
 import { useState, useContext } from "react";
 
+import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import AuthContext from "@/store/auth-context";
-import LoginImage from "@/shared/assets/signin-page-image1.png";
 import Card from "@/components/Card";
 import classes from "@/styles/Form.module.css";
 import buttonClasses from "@/styles/Button.module.css";
-import Link from "next/link";
-import Image from "next/image";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import LoginImage from "@/shared/assets/signin-page-image1.png";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import toast from "react-hot-toast";
 
 const initialState = {
@@ -29,6 +30,7 @@ const Login = () => {
   }
 
   const [data, setData] = useState(initialState);
+  const [showPassword, setShowPassword] = useState(false);
 
   const inputChangeHandler = (event) => {
     setData((prev) => {
@@ -121,14 +123,30 @@ const Login = () => {
             </div>
             <div className={classes["form-control"]}>
               <label htmlFor="password">Password : </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={data.password}
-                onChange={inputChangeHandler}
-                required
-              />
+              <div className={classes["password-field-wrapper"]}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id={classes["password"]}
+                  name="password"
+                  value={data.password}
+                  onChange={inputChangeHandler}
+                  className={classes["password-field"]}
+                  required
+                />
+                <button
+                  type="button"
+                  className={classes["toggle-pass-btn"]}
+                  onClick={() => {
+                    setShowPassword((prev) => !prev);
+                  }}
+                >
+                  {showPassword ? (
+                    <IoMdEyeOff className={classes["eye-icon"]} />
+                  ) : (
+                    <IoMdEye className={classes["eye-icon"]} />
+                  )}
+                </button>
+              </div>
             </div>
             <div className={classes["form-actions"]}>
               <button
@@ -141,6 +159,32 @@ const Login = () => {
                 ) : (
                   "Sign In"
                 )}
+              </button>
+              <button
+                type="button"
+                className={`${classes["form-action"]} ${buttonClasses.button}`}
+                onClick={() => {
+                  setData((prev) => ({
+                    ...prev,
+                    email: "guestuser@example.com",
+                    password: "12345678",
+                  }));
+                }}
+              >
+                Get guest user credentials
+              </button>
+              <button
+                type="button"
+                className={`${classes["form-action"]} ${buttonClasses.button}`}
+                onClick={() => {
+                  setData((prev) => ({
+                    ...prev,
+                    email: "adminuser@example.com",
+                    password: "12345678",
+                  }));
+                }}
+              >
+                Get Admin user credentials
               </button>
             </div>
             <div className={`${classes.register} ${classes["form-action"]}`}>

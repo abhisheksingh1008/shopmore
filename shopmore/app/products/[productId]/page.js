@@ -16,6 +16,7 @@ const ProductDetailPage = ({ params }) => {
   const [product, setproduct] = useState(null);
   const [isLoading, setisLoading] = useState(false);
   const [isError, setIsError] = useState("");
+  const [addingToCart, setAddingToCart] = useState(false);
 
   const fetchProductDetails = async () => {
     setisLoading(true);
@@ -45,6 +46,8 @@ const ProductDetailPage = ({ params }) => {
       return;
     }
 
+    setAddingToCart(true);
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URI}/users/cart`,
@@ -71,6 +74,8 @@ const ProductDetailPage = ({ params }) => {
       console.log(error);
       toast.error(error.message);
     }
+
+    setAddingToCart(false);
   };
 
   useEffect(() => {
@@ -116,7 +121,7 @@ const ProductDetailPage = ({ params }) => {
               </div>
               {product.countInStock === 0 ? (
                 <div className={classes["out-of-stock"]}>Out Of Stock</div>
-              ) : product.countInStock < 1000 ? (
+              ) : product.countInStock < 100 ? (
                 <div className={classes["stock-left"]}>
                   Hurry only {product.countInStock} left!
                 </div>
@@ -131,7 +136,7 @@ const ProductDetailPage = ({ params }) => {
                   onClick={addItemToCartHandler}
                   className={classes.button}
                 >
-                  Add to Cart
+                  {addingToCart ? <LoadingSpinner /> : "Add to Cart"}
                 </button>
               )}
               <div className={classes.reviews}>

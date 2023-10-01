@@ -38,6 +38,12 @@ const page = () => {
 
   const addReviewHandler = async (event) => {
     event.preventDefault();
+
+    if (formData.rating === 0) {
+      toast.error("Please provide a ratitng.");
+      return;
+    }
+
     setFormData((prev) => {
       return {
         ...prev,
@@ -71,6 +77,8 @@ const page = () => {
       } else {
         toast.success(`New Review added.`);
       }
+
+      router.back();
     } catch (error) {
       console.log(error);
       toast.error(error.message);
@@ -79,11 +87,9 @@ const page = () => {
     setFormData((prev) => {
       return {
         ...prev,
-        isSubmitting: true,
+        isSubmitting: false,
       };
     });
-
-    router.back();
   };
 
   return (

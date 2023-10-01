@@ -6,7 +6,7 @@
 }
 
 .title {
-  margin: 0.75rem;
+  margin: 0.3rem 0.15rem;
 }
 
 .wrapper {
@@ -30,6 +30,7 @@
 
 .button-icon {
   vertical-align: middle;
+  text-align: center;
   font-size: 1.25rem;
 }
 
