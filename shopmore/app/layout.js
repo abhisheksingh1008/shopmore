@@ -9,10 +9,10 @@ import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata = {
-  title: "Shopmore - Your go to Ecommerce App",
-  description: "Shopmore Ecommerece App - by Abhishek Singh",
-};
+// export const metadata = {
+//   title: "Shopmore - Your go to Ecommerce App",
+//   description: "Shopmore Ecommerece App - by Abhishek Singh",
+// };
 
 let showNavbar = true;
 
