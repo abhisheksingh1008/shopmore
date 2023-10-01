@@ -20,6 +20,10 @@ app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 
+app.get("/", (req, res, next) => {
+  res.send("Shopmore backend API is running successfully...");
+});
+
 app.use(notFound);
 app.use(errorHandler);
 
